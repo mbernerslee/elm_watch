@@ -1,0 +1,36 @@
+#!/bin/bash
+
+log_info() {
+  echo -e "\e[35m$1\e[39m"
+}
+
+elm_make() {
+  log_info "Running 'elm make $1'"
+  elm make $1
+}
+
+watch() {
+  inotifywait -m -r -q --exclude '(.swp)' -e close_write ./ |
+  while read path action file; do
+    if [[ "$file" == *.elm ]]; then
+      if [ $FIXED_FILE ]; then
+        elm_make $main_path
+      else
+        echo $path"Main.elm"
+        elm_make $path"Main.elm"
+      fi
+    fi
+  done
+}
+
+log_info "Watching for .elm file changes...."
+
+while [[ $# -gt 0 ]]
+do
+  FIXED_FILE=true
+  main_path="$1"
+  elm_make $main_path
+  shift
+done
+
+watch
