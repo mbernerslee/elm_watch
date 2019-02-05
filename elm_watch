@@ -16,7 +16,6 @@ watch() {
       if [ $FIXED_FILE ]; then
         elm_make $main_path
       else
-        echo $path"Main.elm"
         elm_make $path"Main.elm"
       fi
     fi
