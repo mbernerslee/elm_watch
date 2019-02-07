@@ -13,6 +13,7 @@ watch() {
   inotifywait -m -r -q --exclude '(.swp)' -e close_write ./ |
   while read path action file; do
     if [[ "$file" == *.elm ]]; then
+      tput reset
       if [ $FIXED_FILE ]; then
         elm_make $main_path
       else
