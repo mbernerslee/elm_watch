@@ -6,17 +6,51 @@ log_info() {
 
 elm_make() {
   log_info "Running 'elm make $1'"
+  make_dir=$(find_elm_json $1)
+  pushd $make_dir
   elm make $1
+  popd
+}
+
+find_main() {
+  find_file_in_parent $1 "Main.elm"
+}
+
+find_elm_json() {
+  main_dir=$(dirname $1)
+  json_dir=$(find_file_in_parent $main_dir "elm.json")
+  echo $(dirname $json_dir)
+}
+
+find_file_in_parent() {
+  current="$(readlink -f $1)"
+  target="$2"
+  while [[ $current != / ]]; do
+    found=$(find "$current" -maxdepth 1 -mindepth 1 -name "$target")
+
+    if [ -n "$found" ]; then
+        echo $current"/"$target
+        return 0
+    fi
+    current="$(readlink -f "$current"/..)"
+  done
+  return 1
 }
 
 watch() {
   inotifywait -m -r -q --exclude '(.swp)' -e close_write ./ |
   while read path action file; do
     if [[ "$file" == *.elm ]]; then
+      tput reset
       if [ $FIXED_FILE ]; then
         elm_make $main_path
       else
-        elm_make $path"Main.elm"
+        main=$(find_main $path)
+        if [ $? -eq 0 ]; then
+            elm_make $main
+        else
+            log_info "No Main.elm found for $file"
+        fi
       fi
     fi
   done
