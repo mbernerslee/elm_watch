@@ -7,9 +7,9 @@ log_info() {
 elm_make() {
   log_info "Running 'elm make $1'"
   make_dir=$(find_elm_json $1)
-  pushd $make_dir
+  pushd $make_dir > /dev/null
   elm make $1
-  popd
+  popd > /dev/null
 }
 
 find_main() {
