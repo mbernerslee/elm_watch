@@ -61,7 +61,7 @@ log_info "Watching for .elm file changes...."
 while [[ $# -gt 0 ]]
 do
   FIXED_FILE=true
-  main_path="$1"
+  main_path=$(readlink -f "$1")
   elm_make $main_path
   shift
 done
