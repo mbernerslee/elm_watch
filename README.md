@@ -1,3 +1,2 @@
-run setup_in to symlink to a directory in your path
-
-e.g. setup_in ~/.local/bin
+This repo has been made redundant by
+https://github.com/danturn/constant_testing
